@@ -3,13 +3,14 @@ import pandas as pd
 from pathlib import Path
 
 # =====================配置参数区=====================
+OUTPUT_DIR = Path("./output")
 # 输入文件
-INPUT_BASE_MERGE = Path("./park_base_merge_lonlat.csv")   # 任务2.2输出：融合API经纬度的停车场基础总表
-INPUT_DYNAMIC = Path("./park_dynamic_total.csv")          # 任务2.1输出：融合后的全量泊车记录表
+INPUT_BASE_MERGE = OUTPUT_DIR / "park_base_merge_lonlat.csv"   # 任务2.2输出：融合API经纬度的停车场基础总表
+INPUT_DYNAMIC = OUTPUT_DIR / "park_dynamic_total.csv"          # 任务2.1输出：融合后的全量泊车记录表
 
 # 输出文件
-OUT_VALID_PARK_BASE = Path("./valid_park_base.csv")    # 过滤后【有效停车场基础信息表】
-OUT_VALID_DYNAMIC = Path("./valid_park_dynamic.csv")   # 过滤后【有效泊车记录表】
+OUT_VALID_PARK_BASE = OUTPUT_DIR / "valid_park_base.csv"    # 过滤后【有效停车场基础信息表】
+OUT_VALID_DYNAMIC = OUTPUT_DIR / "valid_park_dynamic.csv"   # 过滤后【有效泊车记录表】
 
 CSV_ENCODING = "utf-8-sig"
 JOIN_KEY = "TCCBH"       # 停车场编号，两张表关联主键

@@ -10,9 +10,9 @@ import os
 # data文件夹路径，存放原始csv和训练集xlsx
 DATA_FOLDER = "./data"
 # 复用任务2.1输出的停车场基础信息总表
-BASIC_FROM_TASK21 = "./park_base_total.csv"
+BASIC_FROM_TASK21 = "./output/park_base_total.csv"
 # 任务3.3输出结果文件
-OUTPUT_FILE = "./Hourly_Parking_Utilization_Results.csv"
+OUTPUT_FILE = "./output/Hourly_Parking_Utilization_Results.csv"
 # CSV中文编码
 CSV_ENCODING = "utf-8-sig"
 # 利用率标签阈值（可根据题目要求修改）

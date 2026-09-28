@@ -28,10 +28,11 @@ ROOT_DIR = Path(__file__).resolve().parents[1]
 load_dotenv(ROOT_DIR / ".env", override=False)
 ZHIPU_API_KEY = os.getenv("ZHIPU_API_KEY", "").strip()
 
+OUTPUT_DIR = Path("./output")
 # 输入文件：任务2.2融合清洗完成后的停车场总表
-INPUT_FILE = Path("./valid_park_base_wgs84.csv")
+INPUT_FILE = OUTPUT_DIR / "valid_park_base_wgs84.csv"
 # 输出文件：新增price_tag价格标签的结果文件
-OUTPUT_FILE = Path("./valid_park_base_wgs84_glm_tag.csv")
+OUTPUT_FILE = OUTPUT_DIR / "valid_park_base_wgs84_glm_tag.csv"
 
 # 文本编码，中文csv固定用utf-8-sig，避免中文乱码
 CSV_ENCODING = "utf-8-sig"

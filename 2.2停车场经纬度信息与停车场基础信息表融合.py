@@ -3,12 +3,13 @@ import pandas as pd
 from pathlib import Path
 
 # =====================配置参数区=====================
+OUTPUT_DIR = Path("./output")
 # 任务2.1输出：融合后的停车场基础总表
-INPUT_BASE = Path("./park_base_total.csv")
+INPUT_BASE = OUTPUT_DIR / "park_base_total.csv"
 # 任务1.2输出：停车场周边兴趣点信息表
-INPUT_POI = Path("./绍兴全部停车场周边POI信息表.csv")
+INPUT_POI = OUTPUT_DIR / "绍兴全部停车场周边POI信息表.csv"
 # 任务2.2输出：融合互联网采集经纬度后的停车场基础表
-OUT_MERGE_BASE = Path("./park_base_merge_lonlat.csv")
+OUT_MERGE_BASE = OUTPUT_DIR / "park_base_merge_lonlat.csv"
 
 CSV_ENCODING = "utf-8-sig"
 

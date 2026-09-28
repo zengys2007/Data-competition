@@ -25,8 +25,9 @@ dynamic_file_list = [
 ]
 
 # --------输出融合之后的文件路径--------
-OUT_PARK_BASE = Path("./park_base_total.csv")    # 融合后【停车场基础信息总表】
-OUT_PARK_DYNAMIC = Path("./park_dynamic_total.csv") # 融合后【泊车记录总表】
+OUTPUT_DIR = Path("./output")
+OUT_PARK_BASE = OUTPUT_DIR / "park_base_total.csv"    # 融合后【停车场基础信息总表】
+OUT_PARK_DYNAMIC = OUTPUT_DIR / "park_dynamic_total.csv" # 融合后【泊车记录总表】
 
 # csv读取编码，处理中文乱码，utf‑8‑sig兼容带BOM的导出csv
 CSV_ENCODING = "utf-8-sig"

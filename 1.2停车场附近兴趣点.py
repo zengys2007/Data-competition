@@ -25,9 +25,10 @@ API_KEY = os.getenv("AMAP_API_KEY", "").strip()
 # data文件夹，csv全部放在这个文件夹，相对路径，不用写死D盘
 DATA_FOLDER = Path("./data")
 
-# 输出POI结果文件
-OUTPUT_EXCEL = Path("./绍兴全部停车场周边POI信息表.xlsx")
-OUTPUT_CSV = Path("./绍兴全部停车场周边POI信息表.csv")  # 同时输出csv，后续任务读取更稳定
+# 输出目录与POI结果文件
+OUTPUT_DIR = Path("./output")
+OUTPUT_EXCEL = OUTPUT_DIR / "绍兴全部停车场周边POI信息表.xlsx"
+OUTPUT_CSV = OUTPUT_DIR / "绍兴全部停车场周边POI信息表.csv"  # 同时输出csv，后续任务读取更稳定
 
 # 限定查询城市：绍兴，防止匹配到外省同名地点
 CITY = "绍兴"
@@ -247,7 +248,7 @@ def main():
     # 输出地理编码失败清单
     if len(fail_park_list) > 0:
         df_fail = pd.DataFrame(fail_park_list)
-        fail_file = Path("./停车场地理编码失败清单.csv")
+        fail_file = OUTPUT_DIR / "停车场地理编码失败清单.csv"
         df_fail.to_csv(fail_file, encoding="utf-8-sig", index=False)
         print(f"\n{len(fail_park_list)}个停车场地理编码失败，清单输出:{fail_file}")
 

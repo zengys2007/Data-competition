@@ -4,13 +4,14 @@ import math
 from pathlib import Path
 
 # =====================配置参数区=====================
+OUTPUT_DIR = Path("./output")
 # 输入文件
-INPUT_VALID_PARK = Path("./valid_park_base.csv")          # 任务2.3输出：有效停车场基础表
-INPUT_POI = Path("./绍兴全部停车场周边POI信息表.csv")       # 任务1.2输出POI表
+INPUT_VALID_PARK = OUTPUT_DIR / "valid_park_base.csv"          # 任务2.3输出：有效停车场基础表
+INPUT_POI = OUTPUT_DIR / "绍兴全部停车场周边POI信息表.csv"       # 任务1.2输出POI表
 
 # 输出文件：统一转换到WGS84（CGCS2000，竞赛民用等价）
-OUT_PARK_WGS84 = Path("./valid_park_base_wgs84.csv")
-OUT_POI_WGS84 = Path("./poi_info_wgs84.csv")
+OUT_PARK_WGS84 = OUTPUT_DIR / "valid_park_base_wgs84.csv"
+OUT_POI_WGS84 = OUTPUT_DIR / "poi_info_wgs84.csv"
 
 CSV_ENCODING = "utf-8-sig"
 

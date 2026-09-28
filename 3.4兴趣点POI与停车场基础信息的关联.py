@@ -5,12 +5,13 @@ import pandas as pd
 from pathlib import Path
 
 # ===================== 【配置区，按需修改文件名称】 =====================
+OUTPUT_DIR = Path("./output")
 # 任务1.2输出：绍兴全市合并后的停车场周边POI总表（csv文件，本次修改后的路径）
-POI_FILE = Path('./绍兴全部停车场周边POI信息表.csv')
+POI_FILE = OUTPUT_DIR / "绍兴全部停车场周边POI信息表.csv"
 # 任务2.1输出：停车场基础信息总表（包含停车场编号、名称、经纬度）
-PARK_BASE_FILE = Path('./park_base_total.csv')
+PARK_BASE_FILE = OUTPUT_DIR / "park_base_total.csv"
 # 任务3.4输出：POI与停车场多对多关联明细结果
-OUTPUT_34 = Path('././POI_ParkingLot_Association_Table.csv')
+OUTPUT_34 = OUTPUT_DIR / "POI_ParkingLot_Association_Table.csv"
 # CSV文件编码，设置utf-8-sig，防止中文打开乱码
 CSV_ENCODING = "utf-8-sig"
 # 距离阈值：小于1000米判定存在关联（题目规定）
