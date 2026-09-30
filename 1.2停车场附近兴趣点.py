@@ -82,7 +82,7 @@ def _parse_location(loc_str):
 
 def search_place(keywords: str, types: str = None, city: str = None):
     """
-    高德关键字搜索：按名称匹配停车场 POI（与停车场坐标采集.py 同一套逻辑）
+    高德关键字搜索：按名称匹配停车场 POI
     :return: pois 列表；失败返回空列表
     """
     url = "https://restapi.amap.com/v3/place/text"
@@ -198,7 +198,6 @@ def geocode(address: str, name: str, city: str = None):
 def resolve_parking_coord(name: str, address: str = "", city: str = None):
     """
     优先 POI 关键字搜索匹配停车场；搜不到再地理编码兜底。
-    与 停车场坐标采集.py 相同选取方法。
     :return: (lon, lat, source)  source=poi|geocode；失败 (None, None, None)
     """
     city = city or CITY
@@ -315,7 +314,7 @@ def main():
 
         print(f"\n==== [{idx+1}/{total_count}] 停车场编号:{park_id} 名称:{park_name} ====")
 
-        # 与停车场坐标采集.py相同：优先POI匹配停车场，再地理编码兜底
+        # 优先POI匹配停车场坐标，再地理编码兜底
         park_lon, park_lat, source = resolve_parking_coord(
             name=park_name, address=park_addr, city=CITY
         )
