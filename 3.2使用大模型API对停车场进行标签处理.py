@@ -24,7 +24,7 @@ from dotenv import load_dotenv
 #    PowerShell：
 #        [System.Environment]::SetEnvironmentVariable("ZHIPU_API_KEY", "你的key", "User")
 # 2. 项目根目录 .env 中写一行：ZHIPU_API_KEY=你的key
-ROOT_DIR = Path(__file__).resolve().parents[1]
+ROOT_DIR = Path(__file__).resolve().parent
 load_dotenv(ROOT_DIR / ".env", override=False)
 ZHIPU_API_KEY = os.getenv("ZHIPU_API_KEY", "").strip()
 
