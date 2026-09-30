@@ -6,7 +6,7 @@ from pathlib import Path
 
 # =====================【配置区，务必核对修改】 =====================
 OUTPUT_DIR = Path("./output")
-# 在任务2.3输出停车场基础表上 任务3.1已完成经纬度的编码格式转换GCJ‑02 → WGS84转换
+# 任务2.3/3.1停车场基础表（内含原始GCJ-02与转换后的WGS84）
 PARK_BASE = OUTPUT_DIR / "valid_park_base_wgs84.csv"
 # 任务3.3输出：每小时车位利用率
 UTIL_33 = OUTPUT_DIR / "Hourly_Parking_Utilization_Results.csv"
@@ -14,13 +14,16 @@ UTIL_33 = OUTPUT_DIR / "Hourly_Parking_Utilization_Results.csv"
 OUT_HTML = OUTPUT_DIR / "Folium_绍兴停车场供需热力地图.html"
 CSV_ENCODING = "utf-8-sig"
 
+# ---------- 高德底图配套：使用表内原始 GCJ-02 经纬度 ----------
+GCJ02_LON_COL = "api_lon_gcj02"
+GCJ02_LAT_COL = "api_lat_gcj02"
 
-
-
-# ---------- 这里修改为你表格里面真实WGS84字段名 ----------
-# 任务3.1输出的WGS84经度、纬度
-WGS84_LON_COL = "lon_wgs84_cgcs2000"
-WGS84_LAT_COL = "lat_wgs84_cgcs2000"
+# 高德矢量路网瓦片（国内可访问，坐标系为 GCJ-02）
+GAODE_TILES = (
+    "https://webrd02.is.autonavi.com/appmaptile?"
+    "lang=zh_cn&size=1&scale=1&style=7&x={x}&y={y}&z={z}"
+)
+GAODE_ATTR = "高德地图"
 
 # 热力图样式参数
 HEAT_RADIUS = 26
@@ -41,27 +44,26 @@ def main():
     print("==================== 任务4.1 Folium停车场泊车供需热力地图 开始 ====================")
 
     # --------------------------
-    # 步骤1：读取停车场基础信息（WGS84坐标来自任务3.1处理结果）
+    # 步骤1：读取停车场基础信息（沿用 GCJ-02，配合高德底图）
     # --------------------------
     print("\n1.读取停车场基础信息表")
     df_park = pd.read_csv(PARK_BASE, encoding=CSV_ENCODING)
     print(f"\n停车场总记录数：{df_park.shape[0]}")
     print(f"表格全部字段：{df_park.columns.tolist()}")
 
-    # 过滤：WGS84经纬度、停车场编号、总泊位不为空，总泊位>0
-    df_park = df_park.dropna(subset=["TCCBH", WGS84_LON_COL, WGS84_LAT_COL, "BWZS"])
+    # 过滤：GCJ-02经纬度、停车场编号、总泊位不为空，总泊位>0
+    df_park = df_park.dropna(subset=["TCCBH", GCJ02_LON_COL, GCJ02_LAT_COL, "BWZS"])
     df_park = df_park[df_park["BWZS"] > 0].copy()
 
     # 转为数值
-    df_park[WGS84_LON_COL] = pd.to_numeric(df_park[WGS84_LON_COL], errors="coerce")
-    df_park[WGS84_LAT_COL] = pd.to_numeric(df_park[WGS84_LAT_COL], errors="coerce")
+    df_park[GCJ02_LON_COL] = pd.to_numeric(df_park[GCJ02_LON_COL], errors="coerce")
+    df_park[GCJ02_LAT_COL] = pd.to_numeric(df_park[GCJ02_LAT_COL], errors="coerce")
     df_park["BWZS"] = pd.to_numeric(df_park["BWZS"], errors="coerce")
 
     # 过滤绍兴合理经纬度范围
-    df_park = df_park[(df_park[WGS84_LON_COL] > 119.0) & (df_park[WGS84_LON_COL] < 121.0)]
-    df_park = df_park[(df_park[WGS84_LAT_COL] > 29.0) & (df_park[WGS84_LAT_COL] < 31.0)]
-    print(f"\n过滤后有效WGS84坐标停车场数量：{df_park.shape[0]}")
-
+    df_park = df_park[(df_park[GCJ02_LON_COL] > 119.0) & (df_park[GCJ02_LON_COL] < 121.0)]
+    df_park = df_park[(df_park[GCJ02_LAT_COL] > 29.0) & (df_park[GCJ02_LAT_COL] < 31.0)]
+    print(f"\n过滤后有效GCJ-02坐标停车场数量：{df_park.shape[0]}")
 
     # --------------------------
     # 步骤2：读取任务3.3小时利用率，聚合得到每个停车场平均车位利用率
@@ -74,7 +76,6 @@ def main():
     df_park_util.rename(columns={"停车场ID": "TCCBH"}, inplace=True)
     print(f"\n存在利用率统计的停车场数量：{df_park_util.shape[0]}")
 
-
     # --------------------------
     # 步骤3：合并基础信息 + 利用率
     # --------------------------
@@ -85,30 +86,29 @@ def main():
         on="TCCBH",
         how="inner"
     )
-    print(f"\n同时具备WGS84坐标+利用率的停车场样本数：{df_merge.shape[0]}")
-
+    print(f"\n同时具备GCJ-02坐标+利用率的停车场样本数：{df_merge.shape[0]}")
 
     # --------------------------
     # 步骤4：组装热力数据 格式 [纬度，经度，权重(平均利用率)]
     # --------------------------
-    print("\n4.组装热力图层数据，直接使用任务3.1输出WGS84坐标，不做坐标转换")
+    print("\n4.组装热力图层数据，使用原始GCJ-02坐标，匹配高德底图")
     heat_data = []
     for _, row in df_merge.iterrows():
-        lat = row[WGS84_LAT_COL]
-        lon = row[WGS84_LON_COL]
+        lat = row[GCJ02_LAT_COL]
+        lon = row[GCJ02_LON_COL]
         weight = row["avg_usage_rate"]
         heat_data.append([lat, lon, weight])
 
     # 地图中心点：全部停车场经纬度均值
-    center_lat = df_merge[WGS84_LAT_COL].mean()
-    center_lon = df_merge[WGS84_LON_COL].mean()
+    center_lat = df_merge[GCJ02_LAT_COL].mean()
+    center_lon = df_merge[GCJ02_LON_COL].mean()
 
-    print("\n5.使用稳定底图初始化地图")
+    print("\n5.使用高德底图初始化地图")
     m = folium.Map(
         location=[center_lat, center_lon],
         zoom_start=MAP_ZOOM_START,
-        tiles="OpenStreetMap",  # 或者 "OpenStreetMap"
-        attr="CartoDB"
+        tiles=GAODE_TILES,
+        attr=GAODE_ATTR,
     )
 
     # 添加热力图层
@@ -122,7 +122,6 @@ def main():
         name="停车场供需热力(平均车位利用率)"
     ).add_to(m)
 
-
     # --------------------------
     # 步骤5：添加停车场点位，点击弹窗查看详情
     # --------------------------
@@ -135,7 +134,7 @@ def main():
             f"<b>平均车位利用率:</b> {round(row['avg_usage_rate'],3)}"
         )
         folium.CircleMarker(
-            location=[row[WGS84_LAT_COL], row[WGS84_LON_COL]],
+            location=[row[GCJ02_LAT_COL], row[GCJ02_LON_COL]],
             radius=3,
             popup=folium.Popup(pop_html, max_width=380),
             color="#222222",
@@ -149,9 +148,9 @@ def main():
     # 保存输出HTML
     m.save(str(OUT_HTML))
     print(f"\n热力地图文件已保存：{OUT_HTML}")
-    print("\n使用说明：浏览器打开html，需要联网加载地图底图。")
-    print("颜色释义：🟦蓝色：利用率低、泊位充足；🔴红色：利用率高，停车供需矛盾突出。")
-    print("\n本代码直接读取任务3.1输出WGS84坐标，不再执行GCJ‑02坐标转换，避免二次转换坐标错乱。")
+    print("\n使用说明：浏览器打开html，需要联网加载高德底图。")
+    print("颜色释义：蓝色：利用率低、泊位充足；红色：利用率高，停车供需矛盾突出。")
+    print("\n本代码使用表内 api_lon/lat_gcj02，配合高德GCJ-02底图，避免坐标系不一致。")
     print("\n==================== 任务4.1执行完毕 ====================")
 
 
